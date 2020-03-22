@@ -1,0 +1,725 @@
+22/03/2020 21:45:54 ERR not enough information in line using APBD2.Models;
+22/03/2020 21:45:54 ERR not enough information in line using Newtonsoft.Json;
+22/03/2020 21:45:54 ERR not enough information in line using System;
+22/03/2020 21:45:54 ERR not enough information in line using System.IO;
+22/03/2020 21:45:54 ERR not enough information in line using System.Xml.Serialization;
+22/03/2020 21:45:54 ERR not enough information in line 
+22/03/2020 21:45:54 ERR not enough information in line namespace APBD2 {
+22/03/2020 21:45:54 ERR not enough information in line     class Program {
+22/03/2020 21:45:54 ERR not enough information in line 
+22/03/2020 21:45:54 ERR not enough information in line         static void Main(string[] args) {
+22/03/2020 21:45:54 ERR not enough information in line 
+22/03/2020 21:45:54 ERR not enough information in line             var inputPath = args.Length > 0 ? args[0] : "Files\\data.csv";
+22/03/2020 21:45:54 ERR not enough information in line             var outputPath = args.Length > 1 ? args[1] : @"Files\result";
+22/03/2020 21:45:54 ERR not enough information in line             var outputType = args.Length > 2 ? args[2] : "xml";
+22/03/2020 21:45:54 ERR not enough information in line           
+22/03/2020 21:45:54 ERR not enough information in line             try {
+22/03/2020 21:45:54 ERR not enough information in line 
+22/03/2020 21:45:54 ERR not enough information in line                 Path.GetFullPath(inputPath);
+22/03/2020 21:45:54 ERR not enough information in line                 Path.GetFullPath(outputPath);
+22/03/2020 21:45:54 ERR not enough information in line             }
+22/03/2020 21:45:54 ERR not enough information in line             catch (ArgumentException e) {
+22/03/2020 21:45:54 ERR not enough information in line 
+22/03/2020 21:45:54 ERR not enough information in line                 File.AppendAllText(@"Files\Log.txt", $"{DateTime.UtcNow} ERR specified path is not correct: {e.Message}\n");
+22/03/2020 21:45:54 ERR not enough information in line             }
+22/03/2020 21:45:54 ERR not enough information in line 
+22/03/2020 21:45:54 ERR not enough information in line             try {
+22/03/2020 21:45:54 ERR not enough information in line 
+22/03/2020 21:45:54 ERR not enough information in line                 //Checking if file exists
+22/03/2020 21:45:54 ERR not enough information in line                 if (!File.Exists(inputPath)) throw new FileNotFoundException("ERR", inputPath.Split("\\")[^1]);
+22/03/2020 21:45:54 ERR not enough information in line 
+22/03/2020 21:45:54 ERR not enough information in line                 var university = new University {
+22/03/2020 21:45:54 ERR not enough information in line 
+22/03/2020 21:45:54 ERR not enough information in line                     Author = "Jakub Goralczyk"
+22/03/2020 21:45:54 ERR not enough information in line                 };
+22/03/2020 21:45:54 ERR not enough information in line 
+22/03/2020 21:45:54 ERR not enough information in line                 //Reading from file
+22/03/2020 21:45:54 ERR not enough information in line                 foreach (var line in File.ReadAllLines(inputPath)) {
+22/03/2020 21:45:54 ERR not enough information in line 
+22/03/2020 21:45:54 ERR not enough information in line                     //cheking if there is 9 arguments in line
+22/03/2020 21:45:54 ERR not enough information in line                     var splitted = line.Split(",");
+22/03/2020 21:45:54 ERR not enough information in line 
+22/03/2020 21:45:54 ERR not enough information in line                     if (splitted.Length < 8) {
+22/03/2020 21:45:54 ERR not enough information in line 
+22/03/2020 21:45:54 ERR not enough information in line                         File.AppendAllText(@"Files\Log.txt", $"{DateTime.UtcNow} ERR not enough information in line {line}\n");
+22/03/2020 21:45:54 ERR not enough information in line                         continue;
+22/03/2020 21:45:54 ERR not enough information in line                     }
+22/03/2020 21:45:54 ERR not enough information in line                     //checking if all from 9 lines are not empty
+22/03/2020 21:45:54 ERR not enough information in line                     int countMissing = 0;
+22/03/2020 21:45:54 ERR not enough information in line 
+22/03/2020 21:45:54 ERR not enough information in line                     for (int i = 0; i < splitted.Length; i++) {
+22/03/2020 21:45:54 ERR not enough information in line 
+22/03/2020 21:45:54 ERR not enough information in line                         if (splitted[i].Equals("")) {
+22/03/2020 21:45:54 ERR not enough information in line 
+22/03/2020 21:45:54 ERR not enough information in line                             File.AppendAllText(@"Files\Log.txt", $"{DateTime.UtcNow} ERR no information in line {line}\n");
+22/03/2020 21:45:54 ERR not enough information in line                             countMissing++;
+22/03/2020 21:45:54 ERR not enough information in line                         }
+22/03/2020 21:45:54 ERR not enough information in line                     }
+22/03/2020 21:45:54 ERR not enough information in line 
+22/03/2020 21:45:54 ERR not enough information in line                     if (countMissing > 0) continue;
+22/03/2020 21:45:54 ERR not enough information in line  
+22/03/2020 21:45:54 ERR not enough information in line 
+22/03/2020 21:45:54 ERR not enough information in line                     var stud = new Student {
+22/03/2020 21:45:54 ERR not enough information in line 
+22/03/2020 21:45:54 ERR not enough information in line                         indexNumber = splitted[4],
+22/03/2020 21:45:54 ERR not enough information in line                         firstName = splitted[0],
+22/03/2020 21:45:54 ERR not enough information in line                         lastName = splitted[1],
+22/03/2020 21:45:54 ERR not enough information in line                         birthDate = splitted[5],
+22/03/2020 21:45:54 ERR not enough information in line                         mothersName = splitted[7],
+22/03/2020 21:45:54 ERR not enough information in line                         fathersName = splitted[8],
+22/03/2020 21:45:54 ERR not enough information in line                         studies = new Studies {
+22/03/2020 21:45:54 ERR not enough information in line                             name = splitted[2],
+22/03/2020 21:45:54 ERR not enough information in line                             mode = splitted[3],
+22/03/2020 21:45:54 ERR not enough information in line                         },
+22/03/2020 21:45:54 ERR not enough information in line 
+22/03/2020 21:45:54 ERR not enough information in line                         email = splitted[6],
+22/03/2020 21:45:54 ERR not enough information in line                     };
+22/03/2020 21:45:54 ERR not enough information in line 
+22/03/2020 21:45:54 ERR not enough information in line                     university.Students.Add(stud);
+22/03/2020 21:45:54 ERR not enough information in line                 }
+22/03/2020 21:45:54 ERR not enough information in line 
+22/03/2020 21:45:54 ERR not enough information in line                 // adding studies to active studies 
+22/03/2020 21:45:54 ERR not enough information in line                 foreach (Student student in university.Students) {
+22/03/2020 21:45:54 ERR not enough information in line 
+22/03/2020 21:45:54 ERR not enough information in line                     var subject = student.studies;
+22/03/2020 21:45:54 ERR not enough information in line                     var active = new Active {
+22/03/2020 21:45:54 ERR not enough information in line 
+22/03/2020 21:45:54 ERR not enough information in line                         name = subject.name,
+22/03/2020 21:45:54 ERR not enough information in line                         numberOfStudents = 1,
+22/03/2020 21:45:54 ERR not enough information in line                     };
+22/03/2020 21:45:54 ERR not enough information in line 
+22/03/2020 21:45:54 ERR not enough information in line                     if (university.GetReference(active) != null) university.GetReference(active).numberOfStudents++;
+22/03/2020 21:45:54 ERR not enough information in line 
+22/03/2020 21:45:54 ERR not enough information in line                     else university.ActiveCourses.Add(active);
+22/03/2020 21:45:54 ERR not enough information in line                 }
+22/03/2020 21:45:54 ERR not enough information in line 
+22/03/2020 21:45:54 ERR not enough information in line                 
+22/03/2020 21:45:54 ERR not enough information in line                 if (outputType.Equals("json")) {
+22/03/2020 21:45:54 ERR not enough information in line 
+22/03/2020 21:45:54 ERR not enough information in line                     //Serializing to json
+22/03/2020 21:45:54 ERR not enough information in line                     var forJson = new ToJSON {
+22/03/2020 21:45:54 ERR not enough information in line 
+22/03/2020 21:45:54 ERR not enough information in line                         university = university,
+22/03/2020 21:45:54 ERR not enough information in line                     };
+22/03/2020 21:45:54 ERR not enough information in line 
+22/03/2020 21:45:54 ERR not enough information in line                     var serializer      = new JsonSerializer();
+22/03/2020 21:45:54 ERR not enough information in line                     var stringWriter    = new StringWriter();
+22/03/2020 21:45:54 ERR not enough information in line 
+22/03/2020 21:45:54 ERR not enough information in line                     using (var writer   = new JsonTextWriter(stringWriter)) {
+22/03/2020 21:45:54 ERR not enough information in line 
+22/03/2020 21:45:54 ERR not enough information in line                         writer.QuoteName = false;
+22/03/2020 21:45:54 ERR not enough information in line                         writer.Formatting = Formatting.Indented;
+22/03/2020 21:45:54 ERR not enough information in line                         
+22/03/2020 21:45:54 ERR not enough information in line                         serializer.Serialize(writer, forJson);
+22/03/2020 21:45:54 ERR not enough information in line                     }
+22/03/2020 21:45:54 ERR not enough information in line 
+22/03/2020 21:45:54 ERR not enough information in line                     var jsonString = stringWriter.ToString();
+22/03/2020 21:45:54 ERR not enough information in line                     File.WriteAllText($"{outputPath}.json", jsonString);
+22/03/2020 21:45:54 ERR not enough information in line                 }
+22/03/2020 21:45:54 ERR not enough information in line 
+22/03/2020 21:45:54 ERR not enough information in line                 else if (outputType.Equals("xml")) {
+22/03/2020 21:45:54 ERR not enough information in line 
+22/03/2020 21:45:54 ERR not enough information in line                     using var writer = new FileStream($"{outputPath}.{outputType}", FileMode.Create);
+22/03/2020 21:45:54 ERR not enough information in line                     XmlSerializerNamespaces SerializerNamespace = new XmlSerializerNamespaces();
+22/03/2020 21:45:54 ERR not enough information in line 
+22/03/2020 21:45:54 ERR not enough information in line                     SerializerNamespace.Add("", "");
+22/03/2020 21:45:54 ERR not enough information in line                     var serializer = new XmlSerializer(typeof(University));
+22/03/2020 21:45:54 ERR not enough information in line 
+22/03/2020 21:45:54 ERR not enough information in line                     serializer.Serialize(writer, university, SerializerNamespace);
+22/03/2020 21:45:54 ERR not enough information in line                 }
+22/03/2020 21:45:54 ERR not enough information in line 
+22/03/2020 21:45:54 ERR not enough information in line                 else {
+22/03/2020 21:45:54 ERR not enough information in line 
+22/03/2020 21:45:54 ERR not enough information in line                     File.AppendAllText(@"Files\Log.txt", $"{DateTime.UtcNow} Provided file type is not supported : {outputType}\n");
+22/03/2020 21:45:54 ERR not enough information in line                 }
+22/03/2020 21:45:54 ERR not enough information in line 
+22/03/2020 21:45:54 ERR not enough information in line             } catch (FileNotFoundException e) {
+22/03/2020 21:45:54 ERR not enough information in line                 File.AppendAllText(@"Files\Log.txt", $"{DateTime.UtcNow} {e.Message} File not found ({e.FileName})\n");
+22/03/2020 21:45:54 ERR not enough information in line             }
+22/03/2020 21:45:54 ERR not enough information in line         }
+22/03/2020 21:45:54 ERR not enough information in line     }
+22/03/2020 21:45:54 ERR not enough information in line }
+22/03/2020 21:45:54 Provided file type is not supported : .\Files\result
+22/03/2020 21:46:23 ERR not enough information in line using APBD2.Models;
+22/03/2020 21:46:23 ERR not enough information in line using Newtonsoft.Json;
+22/03/2020 21:46:23 ERR not enough information in line using System;
+22/03/2020 21:46:23 ERR not enough information in line using System.IO;
+22/03/2020 21:46:23 ERR not enough information in line using System.Xml.Serialization;
+22/03/2020 21:46:23 ERR not enough information in line 
+22/03/2020 21:46:23 ERR not enough information in line namespace APBD2 {
+22/03/2020 21:46:23 ERR not enough information in line     class Program {
+22/03/2020 21:46:23 ERR not enough information in line 
+22/03/2020 21:46:23 ERR not enough information in line         static void Main(string[] args) {
+22/03/2020 21:46:23 ERR not enough information in line 
+22/03/2020 21:46:23 ERR not enough information in line             var inputPath = args.Length > 0 ? args[0] : "Files\\data.csv";
+22/03/2020 21:46:23 ERR not enough information in line             var outputPath = args.Length > 1 ? args[1] : @"Files\result";
+22/03/2020 21:46:23 ERR not enough information in line             var outputType = args.Length > 2 ? args[2] : "xml";
+22/03/2020 21:46:23 ERR not enough information in line           
+22/03/2020 21:46:23 ERR not enough information in line             try {
+22/03/2020 21:46:23 ERR not enough information in line 
+22/03/2020 21:46:23 ERR not enough information in line                 Path.GetFullPath(inputPath);
+22/03/2020 21:46:23 ERR not enough information in line                 Path.GetFullPath(outputPath);
+22/03/2020 21:46:23 ERR not enough information in line             }
+22/03/2020 21:46:23 ERR not enough information in line             catch (ArgumentException e) {
+22/03/2020 21:46:23 ERR not enough information in line 
+22/03/2020 21:46:23 ERR not enough information in line                 File.AppendAllText(@"Files\Log.txt", $"{DateTime.UtcNow} ERR specified path is not correct: {e.Message}\n");
+22/03/2020 21:46:23 ERR not enough information in line             }
+22/03/2020 21:46:23 ERR not enough information in line 
+22/03/2020 21:46:23 ERR not enough information in line             try {
+22/03/2020 21:46:23 ERR not enough information in line 
+22/03/2020 21:46:23 ERR not enough information in line                 //Checking if file exists
+22/03/2020 21:46:23 ERR not enough information in line                 if (!File.Exists(inputPath)) throw new FileNotFoundException("ERR", inputPath.Split("\\")[^1]);
+22/03/2020 21:46:23 ERR not enough information in line 
+22/03/2020 21:46:23 ERR not enough information in line                 var university = new University {
+22/03/2020 21:46:23 ERR not enough information in line 
+22/03/2020 21:46:23 ERR not enough information in line                     Author = "Jakub Goralczyk"
+22/03/2020 21:46:23 ERR not enough information in line                 };
+22/03/2020 21:46:23 ERR not enough information in line 
+22/03/2020 21:46:23 ERR not enough information in line                 //Reading from file
+22/03/2020 21:46:23 ERR not enough information in line                 foreach (var line in File.ReadAllLines(inputPath)) {
+22/03/2020 21:46:23 ERR not enough information in line 
+22/03/2020 21:46:23 ERR not enough information in line                     //cheking if there is 9 arguments in line
+22/03/2020 21:46:23 ERR not enough information in line                     var splitted = line.Split(",");
+22/03/2020 21:46:23 ERR not enough information in line 
+22/03/2020 21:46:23 ERR not enough information in line                     if (splitted.Length < 8) {
+22/03/2020 21:46:23 ERR not enough information in line 
+22/03/2020 21:46:23 ERR not enough information in line                         File.AppendAllText(@"Files\Log.txt", $"{DateTime.UtcNow} ERR not enough information in line {line}\n");
+22/03/2020 21:46:23 ERR not enough information in line                         continue;
+22/03/2020 21:46:23 ERR not enough information in line                     }
+22/03/2020 21:46:23 ERR not enough information in line                     //checking if all from 9 lines are not empty
+22/03/2020 21:46:23 ERR not enough information in line                     int countMissing = 0;
+22/03/2020 21:46:23 ERR not enough information in line 
+22/03/2020 21:46:23 ERR not enough information in line                     for (int i = 0; i < splitted.Length; i++) {
+22/03/2020 21:46:23 ERR not enough information in line 
+22/03/2020 21:46:23 ERR not enough information in line                         if (splitted[i].Equals("")) {
+22/03/2020 21:46:23 ERR not enough information in line 
+22/03/2020 21:46:23 ERR not enough information in line                             File.AppendAllText(@"Files\Log.txt", $"{DateTime.UtcNow} ERR no information in line {line}\n");
+22/03/2020 21:46:23 ERR not enough information in line                             countMissing++;
+22/03/2020 21:46:23 ERR not enough information in line                         }
+22/03/2020 21:46:23 ERR not enough information in line                     }
+22/03/2020 21:46:23 ERR not enough information in line 
+22/03/2020 21:46:23 ERR not enough information in line                     if (countMissing > 0) continue;
+22/03/2020 21:46:23 ERR not enough information in line  
+22/03/2020 21:46:23 ERR not enough information in line 
+22/03/2020 21:46:23 ERR not enough information in line                     var stud = new Student {
+22/03/2020 21:46:23 ERR not enough information in line 
+22/03/2020 21:46:23 ERR not enough information in line                         indexNumber = splitted[4],
+22/03/2020 21:46:23 ERR not enough information in line                         firstName = splitted[0],
+22/03/2020 21:46:23 ERR not enough information in line                         lastName = splitted[1],
+22/03/2020 21:46:23 ERR not enough information in line                         birthDate = splitted[5],
+22/03/2020 21:46:23 ERR not enough information in line                         mothersName = splitted[7],
+22/03/2020 21:46:23 ERR not enough information in line                         fathersName = splitted[8],
+22/03/2020 21:46:23 ERR not enough information in line                         studies = new Studies {
+22/03/2020 21:46:23 ERR not enough information in line                             name = splitted[2],
+22/03/2020 21:46:23 ERR not enough information in line                             mode = splitted[3],
+22/03/2020 21:46:23 ERR not enough information in line                         },
+22/03/2020 21:46:23 ERR not enough information in line 
+22/03/2020 21:46:23 ERR not enough information in line                         email = splitted[6],
+22/03/2020 21:46:23 ERR not enough information in line                     };
+22/03/2020 21:46:23 ERR not enough information in line 
+22/03/2020 21:46:23 ERR not enough information in line                     university.Students.Add(stud);
+22/03/2020 21:46:23 ERR not enough information in line                 }
+22/03/2020 21:46:23 ERR not enough information in line 
+22/03/2020 21:46:23 ERR not enough information in line                 // adding studies to active studies 
+22/03/2020 21:46:23 ERR not enough information in line                 foreach (Student student in university.Students) {
+22/03/2020 21:46:23 ERR not enough information in line 
+22/03/2020 21:46:23 ERR not enough information in line                     var subject = student.studies;
+22/03/2020 21:46:23 ERR not enough information in line                     var active = new Active {
+22/03/2020 21:46:23 ERR not enough information in line 
+22/03/2020 21:46:23 ERR not enough information in line                         name = subject.name,
+22/03/2020 21:46:23 ERR not enough information in line                         numberOfStudents = 1,
+22/03/2020 21:46:23 ERR not enough information in line                     };
+22/03/2020 21:46:23 ERR not enough information in line 
+22/03/2020 21:46:23 ERR not enough information in line                     if (university.GetReference(active) != null) university.GetReference(active).numberOfStudents++;
+22/03/2020 21:46:23 ERR not enough information in line 
+22/03/2020 21:46:23 ERR not enough information in line                     else university.ActiveCourses.Add(active);
+22/03/2020 21:46:23 ERR not enough information in line                 }
+22/03/2020 21:46:23 ERR not enough information in line 
+22/03/2020 21:46:23 ERR not enough information in line                 
+22/03/2020 21:46:23 ERR not enough information in line                 if (outputType.Equals("json")) {
+22/03/2020 21:46:23 ERR not enough information in line 
+22/03/2020 21:46:23 ERR not enough information in line                     //Serializing to json
+22/03/2020 21:46:23 ERR not enough information in line                     var forJson = new ToJSON {
+22/03/2020 21:46:23 ERR not enough information in line 
+22/03/2020 21:46:23 ERR not enough information in line                         university = university,
+22/03/2020 21:46:23 ERR not enough information in line                     };
+22/03/2020 21:46:23 ERR not enough information in line 
+22/03/2020 21:46:23 ERR not enough information in line                     var serializer      = new JsonSerializer();
+22/03/2020 21:46:23 ERR not enough information in line                     var stringWriter    = new StringWriter();
+22/03/2020 21:46:23 ERR not enough information in line 
+22/03/2020 21:46:23 ERR not enough information in line                     using (var writer   = new JsonTextWriter(stringWriter)) {
+22/03/2020 21:46:23 ERR not enough information in line 
+22/03/2020 21:46:23 ERR not enough information in line                         writer.QuoteName = false;
+22/03/2020 21:46:23 ERR not enough information in line                         writer.Formatting = Formatting.Indented;
+22/03/2020 21:46:23 ERR not enough information in line                         
+22/03/2020 21:46:23 ERR not enough information in line                         serializer.Serialize(writer, forJson);
+22/03/2020 21:46:23 ERR not enough information in line                     }
+22/03/2020 21:46:23 ERR not enough information in line 
+22/03/2020 21:46:23 ERR not enough information in line                     var jsonString = stringWriter.ToString();
+22/03/2020 21:46:23 ERR not enough information in line                     File.WriteAllText($"{outputPath}.json", jsonString);
+22/03/2020 21:46:23 ERR not enough information in line                 }
+22/03/2020 21:46:23 ERR not enough information in line 
+22/03/2020 21:46:23 ERR not enough information in line                 else if (outputType.Equals("xml")) {
+22/03/2020 21:46:23 ERR not enough information in line 
+22/03/2020 21:46:23 ERR not enough information in line                     using var writer = new FileStream($"{outputPath}.{outputType}", FileMode.Create);
+22/03/2020 21:46:23 ERR not enough information in line                     XmlSerializerNamespaces SerializerNamespace = new XmlSerializerNamespaces();
+22/03/2020 21:46:23 ERR not enough information in line 
+22/03/2020 21:46:23 ERR not enough information in line                     SerializerNamespace.Add("", "");
+22/03/2020 21:46:23 ERR not enough information in line                     var serializer = new XmlSerializer(typeof(University));
+22/03/2020 21:46:23 ERR not enough information in line 
+22/03/2020 21:46:23 ERR not enough information in line                     serializer.Serialize(writer, university, SerializerNamespace);
+22/03/2020 21:46:23 ERR not enough information in line                 }
+22/03/2020 21:46:23 ERR not enough information in line 
+22/03/2020 21:46:23 ERR not enough information in line                 else {
+22/03/2020 21:46:23 ERR not enough information in line 
+22/03/2020 21:46:23 ERR not enough information in line                     File.AppendAllText(@"Files\Log.txt", $"{DateTime.UtcNow} Provided file type is not supported : {outputType}\n");
+22/03/2020 21:46:23 ERR not enough information in line                 }
+22/03/2020 21:46:23 ERR not enough information in line 
+22/03/2020 21:46:23 ERR not enough information in line             } catch (FileNotFoundException e) {
+22/03/2020 21:46:23 ERR not enough information in line                 File.AppendAllText(@"Files\Log.txt", $"{DateTime.UtcNow} {e.Message} File not found ({e.FileName})\n");
+22/03/2020 21:46:23 ERR not enough information in line             }
+22/03/2020 21:46:23 ERR not enough information in line         }
+22/03/2020 21:46:23 ERR not enough information in line     }
+22/03/2020 21:46:23 ERR not enough information in line }
+22/03/2020 21:46:23 Provided file type is not supported : .\Files\result.xml
+22/03/2020 21:47:10 ERR not enough information in line using APBD2.Models;
+22/03/2020 21:47:10 ERR not enough information in line using Newtonsoft.Json;
+22/03/2020 21:47:10 ERR not enough information in line using System;
+22/03/2020 21:47:10 ERR not enough information in line using System.IO;
+22/03/2020 21:47:10 ERR not enough information in line using System.Xml.Serialization;
+22/03/2020 21:47:10 ERR not enough information in line 
+22/03/2020 21:47:10 ERR not enough information in line namespace APBD2 {
+22/03/2020 21:47:10 ERR not enough information in line     class Program {
+22/03/2020 21:47:10 ERR not enough information in line 
+22/03/2020 21:47:10 ERR not enough information in line         static void Main(string[] args) {
+22/03/2020 21:47:10 ERR not enough information in line 
+22/03/2020 21:47:10 ERR not enough information in line             var inputPath = args.Length > 0 ? args[0] : "Files\\data.csv";
+22/03/2020 21:47:10 ERR not enough information in line             var outputPath = args.Length > 1 ? args[1] : @"Files\result";
+22/03/2020 21:47:10 ERR not enough information in line             var outputType = args.Length > 2 ? args[2] : "xml";
+22/03/2020 21:47:10 ERR not enough information in line           
+22/03/2020 21:47:10 ERR not enough information in line             try {
+22/03/2020 21:47:10 ERR not enough information in line 
+22/03/2020 21:47:10 ERR not enough information in line                 Path.GetFullPath(inputPath);
+22/03/2020 21:47:10 ERR not enough information in line                 Path.GetFullPath(outputPath);
+22/03/2020 21:47:10 ERR not enough information in line             }
+22/03/2020 21:47:10 ERR not enough information in line             catch (ArgumentException e) {
+22/03/2020 21:47:10 ERR not enough information in line 
+22/03/2020 21:47:10 ERR not enough information in line                 File.AppendAllText(@"Files\Log.txt", $"{DateTime.UtcNow} ERR specified path is not correct: {e.Message}\n");
+22/03/2020 21:47:10 ERR not enough information in line             }
+22/03/2020 21:47:10 ERR not enough information in line 
+22/03/2020 21:47:10 ERR not enough information in line             try {
+22/03/2020 21:47:10 ERR not enough information in line 
+22/03/2020 21:47:10 ERR not enough information in line                 //Checking if file exists
+22/03/2020 21:47:10 ERR not enough information in line                 if (!File.Exists(inputPath)) throw new FileNotFoundException("ERR", inputPath.Split("\\")[^1]);
+22/03/2020 21:47:10 ERR not enough information in line 
+22/03/2020 21:47:10 ERR not enough information in line                 var university = new University {
+22/03/2020 21:47:10 ERR not enough information in line 
+22/03/2020 21:47:10 ERR not enough information in line                     Author = "Jakub Goralczyk"
+22/03/2020 21:47:10 ERR not enough information in line                 };
+22/03/2020 21:47:10 ERR not enough information in line 
+22/03/2020 21:47:10 ERR not enough information in line                 //Reading from file
+22/03/2020 21:47:10 ERR not enough information in line                 foreach (var line in File.ReadAllLines(inputPath)) {
+22/03/2020 21:47:10 ERR not enough information in line 
+22/03/2020 21:47:10 ERR not enough information in line                     //cheking if there is 9 arguments in line
+22/03/2020 21:47:10 ERR not enough information in line                     var splitted = line.Split(",");
+22/03/2020 21:47:10 ERR not enough information in line 
+22/03/2020 21:47:10 ERR not enough information in line                     if (splitted.Length < 8) {
+22/03/2020 21:47:10 ERR not enough information in line 
+22/03/2020 21:47:10 ERR not enough information in line                         File.AppendAllText(@"Files\Log.txt", $"{DateTime.UtcNow} ERR not enough information in line {line}\n");
+22/03/2020 21:47:10 ERR not enough information in line                         continue;
+22/03/2020 21:47:10 ERR not enough information in line                     }
+22/03/2020 21:47:10 ERR not enough information in line                     //checking if all from 9 lines are not empty
+22/03/2020 21:47:10 ERR not enough information in line                     int countMissing = 0;
+22/03/2020 21:47:10 ERR not enough information in line 
+22/03/2020 21:47:10 ERR not enough information in line                     for (int i = 0; i < splitted.Length; i++) {
+22/03/2020 21:47:10 ERR not enough information in line 
+22/03/2020 21:47:10 ERR not enough information in line                         if (splitted[i].Equals("")) {
+22/03/2020 21:47:10 ERR not enough information in line 
+22/03/2020 21:47:10 ERR not enough information in line                             File.AppendAllText(@"Files\Log.txt", $"{DateTime.UtcNow} ERR no information in line {line}\n");
+22/03/2020 21:47:10 ERR not enough information in line                             countMissing++;
+22/03/2020 21:47:10 ERR not enough information in line                         }
+22/03/2020 21:47:10 ERR not enough information in line                     }
+22/03/2020 21:47:10 ERR not enough information in line 
+22/03/2020 21:47:10 ERR not enough information in line                     if (countMissing > 0) continue;
+22/03/2020 21:47:10 ERR not enough information in line  
+22/03/2020 21:47:10 ERR not enough information in line 
+22/03/2020 21:47:10 ERR not enough information in line                     var stud = new Student {
+22/03/2020 21:47:10 ERR not enough information in line 
+22/03/2020 21:47:10 ERR not enough information in line                         indexNumber = splitted[4],
+22/03/2020 21:47:10 ERR not enough information in line                         firstName = splitted[0],
+22/03/2020 21:47:10 ERR not enough information in line                         lastName = splitted[1],
+22/03/2020 21:47:10 ERR not enough information in line                         birthDate = splitted[5],
+22/03/2020 21:47:10 ERR not enough information in line                         mothersName = splitted[7],
+22/03/2020 21:47:10 ERR not enough information in line                         fathersName = splitted[8],
+22/03/2020 21:47:10 ERR not enough information in line                         studies = new Studies {
+22/03/2020 21:47:10 ERR not enough information in line                             name = splitted[2],
+22/03/2020 21:47:10 ERR not enough information in line                             mode = splitted[3],
+22/03/2020 21:47:10 ERR not enough information in line                         },
+22/03/2020 21:47:10 ERR not enough information in line 
+22/03/2020 21:47:10 ERR not enough information in line                         email = splitted[6],
+22/03/2020 21:47:10 ERR not enough information in line                     };
+22/03/2020 21:47:10 ERR not enough information in line 
+22/03/2020 21:47:10 ERR not enough information in line                     university.Students.Add(stud);
+22/03/2020 21:47:10 ERR not enough information in line                 }
+22/03/2020 21:47:10 ERR not enough information in line 
+22/03/2020 21:47:10 ERR not enough information in line                 // adding studies to active studies 
+22/03/2020 21:47:10 ERR not enough information in line                 foreach (Student student in university.Students) {
+22/03/2020 21:47:10 ERR not enough information in line 
+22/03/2020 21:47:10 ERR not enough information in line                     var subject = student.studies;
+22/03/2020 21:47:10 ERR not enough information in line                     var active = new Active {
+22/03/2020 21:47:10 ERR not enough information in line 
+22/03/2020 21:47:10 ERR not enough information in line                         name = subject.name,
+22/03/2020 21:47:10 ERR not enough information in line                         numberOfStudents = 1,
+22/03/2020 21:47:10 ERR not enough information in line                     };
+22/03/2020 21:47:10 ERR not enough information in line 
+22/03/2020 21:47:10 ERR not enough information in line                     if (university.GetReference(active) != null) university.GetReference(active).numberOfStudents++;
+22/03/2020 21:47:10 ERR not enough information in line 
+22/03/2020 21:47:10 ERR not enough information in line                     else university.ActiveCourses.Add(active);
+22/03/2020 21:47:10 ERR not enough information in line                 }
+22/03/2020 21:47:10 ERR not enough information in line 
+22/03/2020 21:47:10 ERR not enough information in line                 
+22/03/2020 21:47:10 ERR not enough information in line                 if (outputType.Equals("json")) {
+22/03/2020 21:47:10 ERR not enough information in line 
+22/03/2020 21:47:10 ERR not enough information in line                     //Serializing to json
+22/03/2020 21:47:10 ERR not enough information in line                     var forJson = new ToJSON {
+22/03/2020 21:47:10 ERR not enough information in line 
+22/03/2020 21:47:10 ERR not enough information in line                         university = university,
+22/03/2020 21:47:10 ERR not enough information in line                     };
+22/03/2020 21:47:10 ERR not enough information in line 
+22/03/2020 21:47:10 ERR not enough information in line                     var serializer      = new JsonSerializer();
+22/03/2020 21:47:10 ERR not enough information in line                     var stringWriter    = new StringWriter();
+22/03/2020 21:47:10 ERR not enough information in line 
+22/03/2020 21:47:10 ERR not enough information in line                     using (var writer   = new JsonTextWriter(stringWriter)) {
+22/03/2020 21:47:10 ERR not enough information in line 
+22/03/2020 21:47:10 ERR not enough information in line                         writer.QuoteName = false;
+22/03/2020 21:47:10 ERR not enough information in line                         writer.Formatting = Formatting.Indented;
+22/03/2020 21:47:10 ERR not enough information in line                         
+22/03/2020 21:47:10 ERR not enough information in line                         serializer.Serialize(writer, forJson);
+22/03/2020 21:47:10 ERR not enough information in line                     }
+22/03/2020 21:47:10 ERR not enough information in line 
+22/03/2020 21:47:10 ERR not enough information in line                     var jsonString = stringWriter.ToString();
+22/03/2020 21:47:10 ERR not enough information in line                     File.WriteAllText($"{outputPath}.json", jsonString);
+22/03/2020 21:47:10 ERR not enough information in line                 }
+22/03/2020 21:47:10 ERR not enough information in line 
+22/03/2020 21:47:10 ERR not enough information in line                 else if (outputType.Equals("xml")) {
+22/03/2020 21:47:10 ERR not enough information in line 
+22/03/2020 21:47:10 ERR not enough information in line                     using var writer = new FileStream($"{outputPath}.{outputType}", FileMode.Create);
+22/03/2020 21:47:10 ERR not enough information in line                     XmlSerializerNamespaces SerializerNamespace = new XmlSerializerNamespaces();
+22/03/2020 21:47:10 ERR not enough information in line 
+22/03/2020 21:47:10 ERR not enough information in line                     SerializerNamespace.Add("", "");
+22/03/2020 21:47:10 ERR not enough information in line                     var serializer = new XmlSerializer(typeof(University));
+22/03/2020 21:47:10 ERR not enough information in line 
+22/03/2020 21:47:10 ERR not enough information in line                     serializer.Serialize(writer, university, SerializerNamespace);
+22/03/2020 21:47:10 ERR not enough information in line                 }
+22/03/2020 21:47:10 ERR not enough information in line 
+22/03/2020 21:47:10 ERR not enough information in line                 else {
+22/03/2020 21:47:10 ERR not enough information in line 
+22/03/2020 21:47:10 ERR not enough information in line                     File.AppendAllText(@"Files\Log.txt", $"{DateTime.UtcNow} Provided file type is not supported : {outputType}\n");
+22/03/2020 21:47:10 ERR not enough information in line                 }
+22/03/2020 21:47:10 ERR not enough information in line 
+22/03/2020 21:47:10 ERR not enough information in line             } catch (FileNotFoundException e) {
+22/03/2020 21:47:10 ERR not enough information in line                 File.AppendAllText(@"Files\Log.txt", $"{DateTime.UtcNow} {e.Message} File not found ({e.FileName})\n");
+22/03/2020 21:47:10 ERR not enough information in line             }
+22/03/2020 21:47:10 ERR not enough information in line         }
+22/03/2020 21:47:10 ERR not enough information in line     }
+22/03/2020 21:47:10 ERR not enough information in line }
+22/03/2020 21:47:10 Provided file type is not supported : .\Files\result
+22/03/2020 21:47:16 ERR not enough information in line using APBD2.Models;
+22/03/2020 21:47:16 ERR not enough information in line using Newtonsoft.Json;
+22/03/2020 21:47:16 ERR not enough information in line using System;
+22/03/2020 21:47:16 ERR not enough information in line using System.IO;
+22/03/2020 21:47:16 ERR not enough information in line using System.Xml.Serialization;
+22/03/2020 21:47:16 ERR not enough information in line 
+22/03/2020 21:47:16 ERR not enough information in line namespace APBD2 {
+22/03/2020 21:47:16 ERR not enough information in line     class Program {
+22/03/2020 21:47:16 ERR not enough information in line 
+22/03/2020 21:47:16 ERR not enough information in line         static void Main(string[] args) {
+22/03/2020 21:47:16 ERR not enough information in line 
+22/03/2020 21:47:16 ERR not enough information in line             var inputPath = args.Length > 0 ? args[0] : "Files\\data.csv";
+22/03/2020 21:47:16 ERR not enough information in line             var outputPath = args.Length > 1 ? args[1] : "Files\\result";
+22/03/2020 21:47:16 ERR not enough information in line             var outputType = args.Length > 2 ? args[2] : "xml";
+22/03/2020 21:47:16 ERR not enough information in line           
+22/03/2020 21:47:16 ERR not enough information in line             try {
+22/03/2020 21:47:16 ERR not enough information in line 
+22/03/2020 21:47:16 ERR not enough information in line                 Path.GetFullPath(inputPath);
+22/03/2020 21:47:16 ERR not enough information in line                 Path.GetFullPath(outputPath);
+22/03/2020 21:47:16 ERR not enough information in line             }
+22/03/2020 21:47:16 ERR not enough information in line             catch (ArgumentException e) {
+22/03/2020 21:47:16 ERR not enough information in line 
+22/03/2020 21:47:16 ERR not enough information in line                 File.AppendAllText(@"Files\Log.txt", $"{DateTime.UtcNow} ERR specified path is not correct: {e.Message}\n");
+22/03/2020 21:47:16 ERR not enough information in line             }
+22/03/2020 21:47:16 ERR not enough information in line 
+22/03/2020 21:47:16 ERR not enough information in line             try {
+22/03/2020 21:47:16 ERR not enough information in line 
+22/03/2020 21:47:16 ERR not enough information in line                 //Checking if file exists
+22/03/2020 21:47:16 ERR not enough information in line                 if (!File.Exists(inputPath)) throw new FileNotFoundException("ERR", inputPath.Split("\\")[^1]);
+22/03/2020 21:47:16 ERR not enough information in line 
+22/03/2020 21:47:16 ERR not enough information in line                 var university = new University {
+22/03/2020 21:47:16 ERR not enough information in line 
+22/03/2020 21:47:16 ERR not enough information in line                     Author = "Jakub Goralczyk"
+22/03/2020 21:47:16 ERR not enough information in line                 };
+22/03/2020 21:47:16 ERR not enough information in line 
+22/03/2020 21:47:16 ERR not enough information in line                 //Reading from file
+22/03/2020 21:47:16 ERR not enough information in line                 foreach (var line in File.ReadAllLines(inputPath)) {
+22/03/2020 21:47:16 ERR not enough information in line 
+22/03/2020 21:47:16 ERR not enough information in line                     //cheking if there is 9 arguments in line
+22/03/2020 21:47:16 ERR not enough information in line                     var splitted = line.Split(",");
+22/03/2020 21:47:16 ERR not enough information in line 
+22/03/2020 21:47:16 ERR not enough information in line                     if (splitted.Length < 8) {
+22/03/2020 21:47:16 ERR not enough information in line 
+22/03/2020 21:47:16 ERR not enough information in line                         File.AppendAllText(@"Files\Log.txt", $"{DateTime.UtcNow} ERR not enough information in line {line}\n");
+22/03/2020 21:47:16 ERR not enough information in line                         continue;
+22/03/2020 21:47:16 ERR not enough information in line                     }
+22/03/2020 21:47:16 ERR not enough information in line                     //checking if all from 9 lines are not empty
+22/03/2020 21:47:16 ERR not enough information in line                     int countMissing = 0;
+22/03/2020 21:47:16 ERR not enough information in line 
+22/03/2020 21:47:16 ERR not enough information in line                     for (int i = 0; i < splitted.Length; i++) {
+22/03/2020 21:47:16 ERR not enough information in line 
+22/03/2020 21:47:16 ERR not enough information in line                         if (splitted[i].Equals("")) {
+22/03/2020 21:47:16 ERR not enough information in line 
+22/03/2020 21:47:16 ERR not enough information in line                             File.AppendAllText(@"Files\Log.txt", $"{DateTime.UtcNow} ERR no information in line {line}\n");
+22/03/2020 21:47:16 ERR not enough information in line                             countMissing++;
+22/03/2020 21:47:16 ERR not enough information in line                         }
+22/03/2020 21:47:16 ERR not enough information in line                     }
+22/03/2020 21:47:16 ERR not enough information in line 
+22/03/2020 21:47:16 ERR not enough information in line                     if (countMissing > 0) continue;
+22/03/2020 21:47:16 ERR not enough information in line  
+22/03/2020 21:47:16 ERR not enough information in line 
+22/03/2020 21:47:16 ERR not enough information in line                     var stud = new Student {
+22/03/2020 21:47:16 ERR not enough information in line 
+22/03/2020 21:47:16 ERR not enough information in line                         indexNumber = splitted[4],
+22/03/2020 21:47:16 ERR not enough information in line                         firstName = splitted[0],
+22/03/2020 21:47:16 ERR not enough information in line                         lastName = splitted[1],
+22/03/2020 21:47:16 ERR not enough information in line                         birthDate = splitted[5],
+22/03/2020 21:47:16 ERR not enough information in line                         mothersName = splitted[7],
+22/03/2020 21:47:16 ERR not enough information in line                         fathersName = splitted[8],
+22/03/2020 21:47:16 ERR not enough information in line                         studies = new Studies {
+22/03/2020 21:47:16 ERR not enough information in line                             name = splitted[2],
+22/03/2020 21:47:16 ERR not enough information in line                             mode = splitted[3],
+22/03/2020 21:47:16 ERR not enough information in line                         },
+22/03/2020 21:47:16 ERR not enough information in line 
+22/03/2020 21:47:16 ERR not enough information in line                         email = splitted[6],
+22/03/2020 21:47:16 ERR not enough information in line                     };
+22/03/2020 21:47:16 ERR not enough information in line 
+22/03/2020 21:47:16 ERR not enough information in line                     university.Students.Add(stud);
+22/03/2020 21:47:16 ERR not enough information in line                 }
+22/03/2020 21:47:16 ERR not enough information in line 
+22/03/2020 21:47:16 ERR not enough information in line                 // adding studies to active studies 
+22/03/2020 21:47:16 ERR not enough information in line                 foreach (Student student in university.Students) {
+22/03/2020 21:47:16 ERR not enough information in line 
+22/03/2020 21:47:16 ERR not enough information in line                     var subject = student.studies;
+22/03/2020 21:47:16 ERR not enough information in line                     var active = new Active {
+22/03/2020 21:47:16 ERR not enough information in line 
+22/03/2020 21:47:16 ERR not enough information in line                         name = subject.name,
+22/03/2020 21:47:16 ERR not enough information in line                         numberOfStudents = 1,
+22/03/2020 21:47:16 ERR not enough information in line                     };
+22/03/2020 21:47:16 ERR not enough information in line 
+22/03/2020 21:47:16 ERR not enough information in line                     if (university.GetReference(active) != null) university.GetReference(active).numberOfStudents++;
+22/03/2020 21:47:16 ERR not enough information in line 
+22/03/2020 21:47:16 ERR not enough information in line                     else university.ActiveCourses.Add(active);
+22/03/2020 21:47:16 ERR not enough information in line                 }
+22/03/2020 21:47:16 ERR not enough information in line 
+22/03/2020 21:47:16 ERR not enough information in line                 
+22/03/2020 21:47:16 ERR not enough information in line                 if (outputType.Equals("json")) {
+22/03/2020 21:47:16 ERR not enough information in line 
+22/03/2020 21:47:16 ERR not enough information in line                     //Serializing to json
+22/03/2020 21:47:16 ERR not enough information in line                     var forJson = new ToJSON {
+22/03/2020 21:47:16 ERR not enough information in line 
+22/03/2020 21:47:16 ERR not enough information in line                         university = university,
+22/03/2020 21:47:16 ERR not enough information in line                     };
+22/03/2020 21:47:16 ERR not enough information in line 
+22/03/2020 21:47:16 ERR not enough information in line                     var serializer      = new JsonSerializer();
+22/03/2020 21:47:16 ERR not enough information in line                     var stringWriter    = new StringWriter();
+22/03/2020 21:47:16 ERR not enough information in line 
+22/03/2020 21:47:16 ERR not enough information in line                     using (var writer   = new JsonTextWriter(stringWriter)) {
+22/03/2020 21:47:16 ERR not enough information in line 
+22/03/2020 21:47:16 ERR not enough information in line                         writer.QuoteName = false;
+22/03/2020 21:47:16 ERR not enough information in line                         writer.Formatting = Formatting.Indented;
+22/03/2020 21:47:16 ERR not enough information in line                         
+22/03/2020 21:47:16 ERR not enough information in line                         serializer.Serialize(writer, forJson);
+22/03/2020 21:47:16 ERR not enough information in line                     }
+22/03/2020 21:47:16 ERR not enough information in line 
+22/03/2020 21:47:16 ERR not enough information in line                     var jsonString = stringWriter.ToString();
+22/03/2020 21:47:16 ERR not enough information in line                     File.WriteAllText($"{outputPath}.json", jsonString);
+22/03/2020 21:47:16 ERR not enough information in line                 }
+22/03/2020 21:47:16 ERR not enough information in line 
+22/03/2020 21:47:16 ERR not enough information in line                 else if (outputType.Equals("xml")) {
+22/03/2020 21:47:16 ERR not enough information in line 
+22/03/2020 21:47:16 ERR not enough information in line                     using var writer = new FileStream($"{outputPath}.{outputType}", FileMode.Create);
+22/03/2020 21:47:16 ERR not enough information in line                     XmlSerializerNamespaces SerializerNamespace = new XmlSerializerNamespaces();
+22/03/2020 21:47:16 ERR not enough information in line 
+22/03/2020 21:47:16 ERR not enough information in line                     SerializerNamespace.Add("", "");
+22/03/2020 21:47:16 ERR not enough information in line                     var serializer = new XmlSerializer(typeof(University));
+22/03/2020 21:47:16 ERR not enough information in line 
+22/03/2020 21:47:16 ERR not enough information in line                     serializer.Serialize(writer, university, SerializerNamespace);
+22/03/2020 21:47:16 ERR not enough information in line                 }
+22/03/2020 21:47:16 ERR not enough information in line 
+22/03/2020 21:47:16 ERR not enough information in line                 else {
+22/03/2020 21:47:16 ERR not enough information in line 
+22/03/2020 21:47:16 ERR not enough information in line                     File.AppendAllText(@"Files\Log.txt", $"{DateTime.UtcNow} Provided file type is not supported : {outputType}\n");
+22/03/2020 21:47:16 ERR not enough information in line                 }
+22/03/2020 21:47:16 ERR not enough information in line 
+22/03/2020 21:47:16 ERR not enough information in line             } catch (FileNotFoundException e) {
+22/03/2020 21:47:16 ERR not enough information in line                 File.AppendAllText(@"Files\Log.txt", $"{DateTime.UtcNow} {e.Message} File not found ({e.FileName})\n");
+22/03/2020 21:47:16 ERR not enough information in line             }
+22/03/2020 21:47:16 ERR not enough information in line         }
+22/03/2020 21:47:16 ERR not enough information in line     }
+22/03/2020 21:47:16 ERR not enough information in line }
+22/03/2020 21:47:16 Provided file type is not supported : .\Files\result
+22/03/2020 21:47:51 ERR not enough information in line using APBD2.Models;
+22/03/2020 21:47:51 ERR not enough information in line using Newtonsoft.Json;
+22/03/2020 21:47:51 ERR not enough information in line using System;
+22/03/2020 21:47:51 ERR not enough information in line using System.IO;
+22/03/2020 21:47:51 ERR not enough information in line using System.Xml.Serialization;
+22/03/2020 21:47:51 ERR not enough information in line 
+22/03/2020 21:47:51 ERR not enough information in line namespace APBD2 {
+22/03/2020 21:47:51 ERR not enough information in line     class Program {
+22/03/2020 21:47:51 ERR not enough information in line 
+22/03/2020 21:47:51 ERR not enough information in line         static void Main(string[] args) {
+22/03/2020 21:47:51 ERR not enough information in line 
+22/03/2020 21:47:51 ERR not enough information in line             var inputPath = args.Length > 0 ? args[0] : "Files\\data.csv";
+22/03/2020 21:47:51 ERR not enough information in line             var outputPath = args.Length > 1 ? args[1] : "Files\\result";
+22/03/2020 21:47:51 ERR not enough information in line             var outputType = args.Length > 2 ? args[2] : "xml";
+22/03/2020 21:47:51 ERR not enough information in line           
+22/03/2020 21:47:51 ERR not enough information in line             try {
+22/03/2020 21:47:51 ERR not enough information in line 
+22/03/2020 21:47:51 ERR not enough information in line                 Path.GetFullPath(inputPath);
+22/03/2020 21:47:51 ERR not enough information in line                 Path.GetFullPath(outputPath);
+22/03/2020 21:47:51 ERR not enough information in line             }
+22/03/2020 21:47:51 ERR not enough information in line             catch (ArgumentException e) {
+22/03/2020 21:47:51 ERR not enough information in line 
+22/03/2020 21:47:51 ERR not enough information in line                 File.AppendAllText(@"Files\Log.txt", $"{DateTime.UtcNow} ERR specified path is not correct: {e.Message}\n");
+22/03/2020 21:47:51 ERR not enough information in line             }
+22/03/2020 21:47:51 ERR not enough information in line 
+22/03/2020 21:47:51 ERR not enough information in line             try {
+22/03/2020 21:47:51 ERR not enough information in line 
+22/03/2020 21:47:51 ERR not enough information in line                 //Checking if file exists
+22/03/2020 21:47:51 ERR not enough information in line                 if (!File.Exists(inputPath)) throw new FileNotFoundException("ERR", inputPath.Split("\\")[^1]);
+22/03/2020 21:47:51 ERR not enough information in line 
+22/03/2020 21:47:51 ERR not enough information in line                 var university = new University {
+22/03/2020 21:47:51 ERR not enough information in line 
+22/03/2020 21:47:51 ERR not enough information in line                     Author = "Jakub Goralczyk"
+22/03/2020 21:47:51 ERR not enough information in line                 };
+22/03/2020 21:47:51 ERR not enough information in line 
+22/03/2020 21:47:51 ERR not enough information in line                 //Reading from file
+22/03/2020 21:47:51 ERR not enough information in line                 foreach (var line in File.ReadAllLines(inputPath)) {
+22/03/2020 21:47:51 ERR not enough information in line 
+22/03/2020 21:47:51 ERR not enough information in line                     //cheking if there is 9 arguments in line
+22/03/2020 21:47:51 ERR not enough information in line                     var splitted = line.Split(",");
+22/03/2020 21:47:51 ERR not enough information in line 
+22/03/2020 21:47:51 ERR not enough information in line                     if (splitted.Length < 8) {
+22/03/2020 21:47:51 ERR not enough information in line 
+22/03/2020 21:47:51 ERR not enough information in line                         File.AppendAllText(@"Files\Log.txt", $"{DateTime.UtcNow} ERR not enough information in line {line}\n");
+22/03/2020 21:47:51 ERR not enough information in line                         continue;
+22/03/2020 21:47:51 ERR not enough information in line                     }
+22/03/2020 21:47:51 ERR not enough information in line                     //checking if all from 9 lines are not empty
+22/03/2020 21:47:51 ERR not enough information in line                     int countMissing = 0;
+22/03/2020 21:47:51 ERR not enough information in line 
+22/03/2020 21:47:51 ERR not enough information in line                     for (int i = 0; i < splitted.Length; i++) {
+22/03/2020 21:47:51 ERR not enough information in line 
+22/03/2020 21:47:51 ERR not enough information in line                         if (splitted[i].Equals("")) {
+22/03/2020 21:47:51 ERR not enough information in line 
+22/03/2020 21:47:51 ERR not enough information in line                             File.AppendAllText(@"Files\Log.txt", $"{DateTime.UtcNow} ERR no information in line {line}\n");
+22/03/2020 21:47:51 ERR not enough information in line                             countMissing++;
+22/03/2020 21:47:51 ERR not enough information in line                         }
+22/03/2020 21:47:51 ERR not enough information in line                     }
+22/03/2020 21:47:51 ERR not enough information in line 
+22/03/2020 21:47:51 ERR not enough information in line                     if (countMissing > 0) continue;
+22/03/2020 21:47:51 ERR not enough information in line  
+22/03/2020 21:47:51 ERR not enough information in line 
+22/03/2020 21:47:51 ERR not enough information in line                     var stud = new Student {
+22/03/2020 21:47:51 ERR not enough information in line 
+22/03/2020 21:47:51 ERR not enough information in line                         indexNumber = splitted[4],
+22/03/2020 21:47:51 ERR not enough information in line                         firstName = splitted[0],
+22/03/2020 21:47:51 ERR not enough information in line                         lastName = splitted[1],
+22/03/2020 21:47:51 ERR not enough information in line                         birthDate = splitted[5],
+22/03/2020 21:47:51 ERR not enough information in line                         mothersName = splitted[7],
+22/03/2020 21:47:51 ERR not enough information in line                         fathersName = splitted[8],
+22/03/2020 21:47:51 ERR not enough information in line                         studies = new Studies {
+22/03/2020 21:47:51 ERR not enough information in line                             name = splitted[2],
+22/03/2020 21:47:51 ERR not enough information in line                             mode = splitted[3],
+22/03/2020 21:47:51 ERR not enough information in line                         },
+22/03/2020 21:47:51 ERR not enough information in line 
+22/03/2020 21:47:51 ERR not enough information in line                         email = splitted[6],
+22/03/2020 21:47:51 ERR not enough information in line                     };
+22/03/2020 21:47:51 ERR not enough information in line 
+22/03/2020 21:47:51 ERR not enough information in line                     university.Students.Add(stud);
+22/03/2020 21:47:51 ERR not enough information in line                 }
+22/03/2020 21:47:51 ERR not enough information in line 
+22/03/2020 21:47:51 ERR not enough information in line                 // adding studies to active studies 
+22/03/2020 21:47:51 ERR not enough information in line                 foreach (Student student in university.Students) {
+22/03/2020 21:47:51 ERR not enough information in line 
+22/03/2020 21:47:51 ERR not enough information in line                     var subject = student.studies;
+22/03/2020 21:47:51 ERR not enough information in line                     var active = new Active {
+22/03/2020 21:47:51 ERR not enough information in line 
+22/03/2020 21:47:51 ERR not enough information in line                         name = subject.name,
+22/03/2020 21:47:51 ERR not enough information in line                         numberOfStudents = 1,
+22/03/2020 21:47:51 ERR not enough information in line                     };
+22/03/2020 21:47:51 ERR not enough information in line 
+22/03/2020 21:47:51 ERR not enough information in line                     if (university.GetReference(active) != null) university.GetReference(active).numberOfStudents++;
+22/03/2020 21:47:51 ERR not enough information in line 
+22/03/2020 21:47:51 ERR not enough information in line                     else university.ActiveCourses.Add(active);
+22/03/2020 21:47:51 ERR not enough information in line                 }
+22/03/2020 21:47:51 ERR not enough information in line 
+22/03/2020 21:47:51 ERR not enough information in line                 
+22/03/2020 21:47:51 ERR not enough information in line                 if (outputType.Equals("json")) {
+22/03/2020 21:47:51 ERR not enough information in line 
+22/03/2020 21:47:51 ERR not enough information in line                     //Serializing to json
+22/03/2020 21:47:51 ERR not enough information in line                     var forJson = new ToJSON {
+22/03/2020 21:47:51 ERR not enough information in line 
+22/03/2020 21:47:51 ERR not enough information in line                         university = university,
+22/03/2020 21:47:51 ERR not enough information in line                     };
+22/03/2020 21:47:51 ERR not enough information in line 
+22/03/2020 21:47:51 ERR not enough information in line                     var serializer      = new JsonSerializer();
+22/03/2020 21:47:51 ERR not enough information in line                     var stringWriter    = new StringWriter();
+22/03/2020 21:47:51 ERR not enough information in line 
+22/03/2020 21:47:51 ERR not enough information in line                     using (var writer   = new JsonTextWriter(stringWriter)) {
+22/03/2020 21:47:51 ERR not enough information in line 
+22/03/2020 21:47:51 ERR not enough information in line                         writer.QuoteName = false;
+22/03/2020 21:47:51 ERR not enough information in line                         writer.Formatting = Formatting.Indented;
+22/03/2020 21:47:51 ERR not enough information in line                         
+22/03/2020 21:47:51 ERR not enough information in line                         serializer.Serialize(writer, forJson);
+22/03/2020 21:47:51 ERR not enough information in line                     }
+22/03/2020 21:47:51 ERR not enough information in line 
+22/03/2020 21:47:51 ERR not enough information in line                     var jsonString = stringWriter.ToString();
+22/03/2020 21:47:51 ERR not enough information in line                     File.WriteAllText($"{outputPath}.json", jsonString);
+22/03/2020 21:47:51 ERR not enough information in line                 }
+22/03/2020 21:47:51 ERR not enough information in line 
+22/03/2020 21:47:51 ERR not enough information in line                 else if (outputType.Equals("xml")) {
+22/03/2020 21:47:51 ERR not enough information in line 
+22/03/2020 21:47:51 ERR not enough information in line                     using var writer = new FileStream($"{outputPath}.{outputType}", FileMode.Create);
+22/03/2020 21:47:51 ERR not enough information in line                     XmlSerializerNamespaces SerializerNamespace = new XmlSerializerNamespaces();
+22/03/2020 21:47:51 ERR not enough information in line 
+22/03/2020 21:47:51 ERR not enough information in line                     SerializerNamespace.Add("", "");
+22/03/2020 21:47:51 ERR not enough information in line                     var serializer = new XmlSerializer(typeof(University));
+22/03/2020 21:47:51 ERR not enough information in line 
+22/03/2020 21:47:51 ERR not enough information in line                     serializer.Serialize(writer, university, SerializerNamespace);
+22/03/2020 21:47:51 ERR not enough information in line                 }
+22/03/2020 21:47:51 ERR not enough information in line 
+22/03/2020 21:47:51 ERR not enough information in line                 else {
+22/03/2020 21:47:51 ERR not enough information in line 
+22/03/2020 21:47:51 ERR not enough information in line                     File.AppendAllText(@"Files\Log.txt", $"{DateTime.UtcNow} Provided file type is not supported : {outputType}\n");
+22/03/2020 21:47:51 ERR not enough information in line                 }
+22/03/2020 21:47:51 ERR not enough information in line 
+22/03/2020 21:47:51 ERR not enough information in line             } catch (FileNotFoundException e) {
+22/03/2020 21:47:51 ERR not enough information in line                 File.AppendAllText(@"Files\Log.txt", $"{DateTime.UtcNow} {e.Message} File not found ({e.FileName})\n");
+22/03/2020 21:47:51 ERR not enough information in line             }
+22/03/2020 21:47:51 ERR not enough information in line         }
+22/03/2020 21:47:51 ERR not enough information in line     }
+22/03/2020 21:47:51 ERR not enough information in line }
+22/03/2020 21:47:51 Provided file type is not supported : .\Files\result
+22/03/2020 21:48:39 ERR no information in line Zbigniew,Kowalski35,Sztuka Nowych Mediów dzienne,,4450,2000-02-12,35@pjwstk.edu.pl,Alina,Adam
+22/03/2020 21:48:39 ERR no information in line Karolina,Nowak36,Sztuka Nowych Mediów dzienne,,4455,2000-02-12,36@pjwstk.edu.pl,Alina,Adam
+22/03/2020 21:48:39 ERR no information in line Aleksandra,,Sztuka Nowych Mediów dzienne,Dzienne,4434,2000-02-12,42@pjwstk.edu.pl,Alina,Adam
+22/03/2020 21:48:39 ERR no information in line Jolanta,Nowak96,Sztuka Nowych Mediów uzupełniające magisterskie,Dzienne,4756,2000-02-12,96@pjwstk.edu.pl,,
+22/03/2020 21:48:39 ERR no information in line Jolanta,Nowak96,Sztuka Nowych Mediów uzupełniające magisterskie,Dzienne,4756,2000-02-12,96@pjwstk.edu.pl,,
+22/03/2020 21:48:58 ERR no information in line Zbigniew,Kowalski35,Sztuka Nowych Mediów dzienne,,4450,2000-02-12,35@pjwstk.edu.pl,Alina,Adam
+22/03/2020 21:48:58 ERR no information in line Karolina,Nowak36,Sztuka Nowych Mediów dzienne,,4455,2000-02-12,36@pjwstk.edu.pl,Alina,Adam
+22/03/2020 21:48:58 ERR no information in line Aleksandra,,Sztuka Nowych Mediów dzienne,Dzienne,4434,2000-02-12,42@pjwstk.edu.pl,Alina,Adam
+22/03/2020 21:48:58 ERR no information in line Jolanta,Nowak96,Sztuka Nowych Mediów uzupełniające magisterskie,Dzienne,4756,2000-02-12,96@pjwstk.edu.pl,,
+22/03/2020 21:48:58 ERR no information in line Jolanta,Nowak96,Sztuka Nowych Mediów uzupełniające magisterskie,Dzienne,4756,2000-02-12,96@pjwstk.edu.pl,,
+22/03/2020 21:49:03 ERR no information in line Zbigniew,Kowalski35,Sztuka Nowych Mediów dzienne,,4450,2000-02-12,35@pjwstk.edu.pl,Alina,Adam
+22/03/2020 21:49:03 ERR no information in line Karolina,Nowak36,Sztuka Nowych Mediów dzienne,,4455,2000-02-12,36@pjwstk.edu.pl,Alina,Adam
+22/03/2020 21:49:03 ERR no information in line Aleksandra,,Sztuka Nowych Mediów dzienne,Dzienne,4434,2000-02-12,42@pjwstk.edu.pl,Alina,Adam
+22/03/2020 21:49:03 ERR no information in line Jolanta,Nowak96,Sztuka Nowych Mediów uzupełniające magisterskie,Dzienne,4756,2000-02-12,96@pjwstk.edu.pl,,
+22/03/2020 21:49:03 ERR no information in line Jolanta,Nowak96,Sztuka Nowych Mediów uzupełniające magisterskie,Dzienne,4756,2000-02-12,96@pjwstk.edu.pl,,
